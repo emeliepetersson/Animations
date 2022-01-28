@@ -1,25 +1,12 @@
 import React from 'react';
 import styled from 'styled-components/native';
+import { CARDS } from './BoardScreen.types';
 import Button from '../../components/UI/Button/Button';
 import Card from '../../components/UI/Card/Card';
 
-const CARDS = [
-	{ 
-		id: 'card1', image: require('../../assets/card.png')
-	},
-	{ 
-		id: 'card2', image: require('../../assets/card.png')
-	},
-	{ 
-		id: 'card3', image: require('../../assets/card.png')
-	},
-	{ 
-		id: 'card4', image: require('../../assets/card.png')
-	}
-];
-
 const BoardScreen: React.FC = (_props) => {
-	const [shuffled, setShuffled] = React.useState<boolean>(false);
+	const [spread, setSpread] = React.useState<boolean>(false);
+	const [flipped, setFlipped] = React.useState<boolean>(false);
 
 	/**
      * Renders cards in the CARDS array
@@ -32,31 +19,29 @@ const BoardScreen: React.FC = (_props) => {
 				<Card
 					key={card.id}
 					image={card.image}
-					shuffled={shuffled}
+					spread={spread}
 					position={index}
+					flipped={flipped}
 				/>
 			);
 		});
-	}, [shuffled]);
-
-	/**
-     * Shuffles the cards
-     * 
-     * @returns {void}
-     */
-	const shuffleCardsHandler = React.useCallback(() => {
-		setShuffled(state => !state);
-	}, []);
+	}, [flipped, spread]);
 
 	return (
 		<ScBoard>
 			<ScCardsWrapper>
 				{renderCards()}
 			</ScCardsWrapper>
-			<Button
-				text={shuffled ? 'Hide' : 'Show'}
-				pressed={shuffleCardsHandler}
-			/>
+			<ScButtonsWrapper>
+				<Button
+					text={spread ? 'Gather' : 'Spread'}
+					pressed={() => setSpread(state => !state)}
+				/>
+				<Button
+					text="Flip"
+					pressed={() => setFlipped(state => !state)}
+				/>
+			</ScButtonsWrapper>
 		</ScBoard>
 	);
 
@@ -75,4 +60,15 @@ const ScCardsWrapper = styled.View`
     position: relative;
     width: 500px;
     height: 300px;
+`;
+
+const ScButtonsWrapper = styled.View`
+	background-color: #683e33;
+	width: 100%;
+	flex-direction: row;
+	justify-content: space-evenly;
+	position: absolute;
+	bottom: 0;
+	padding: 15px;
+	box-shadow: 0px -5px 5px rgba(0,0,0,0.2);
 `;

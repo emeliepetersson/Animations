@@ -1,5 +1,10 @@
 export interface CardProps {
 	image: any;
-	shuffled: boolean;
+	spread: boolean;
+	flipped: boolean;
 	position: number;
+}
+
+export interface CardStyleProps {
+	flipped: boolean;
 }

@@ -16,12 +16,12 @@ const Button: React.FC<ButtonProps> = (props) => {
 export default Button;
 
 const ScButton = styled.TouchableOpacity`
-    background-color: #1f5052;
+    background-color: #e8e0da;
     padding: 15px 30px;
     border-radius: 5px;
 `;
 
 const ScText = styled.Text`
-    color: #ffffff;
+    color: #683e33;
     font-size: 20px;
 `;
