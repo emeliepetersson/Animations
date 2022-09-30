@@ -11,6 +11,11 @@ const Card: React.FC<CardProps> = (props) => {
 	const posX = useSharedValue(0);
 	const rotationY = useSharedValue(0);
 
+	const timerRef = React.useRef<NodeJS.Timeout>();
+
+	// State used to change the z-index of the front-card when card is halfway through the flip
+	const [halfFlipped, setHalfFlipped] = React.useState<boolean>(false);
+	
 	/**
      * Animates posX and rotate when spread state changes
      */
@@ -28,19 +33,36 @@ const Card: React.FC<CardProps> = (props) => {
      * Animates rotate when flipped state changes
      */
 	React.useEffect(() => {
+		if(timerRef.current) clearTimeout(timerRef.current);
+
+		// The delay is based on the cards position to make som space between the cards while flipping
+		const delay = position * 250;
+		const duration = 500;
+
 		if(props.flipped) {
-			rotationY.value = withDelay(position * 200, withTiming(180));
-			posX.value = withTiming(10 * position);
+			// Shows the front of the cards
+			rotationY.value = withDelay(delay, withTiming(180, { duration }));
+			posX.value = withDelay(delay, withTiming(250, { duration }));
+			
+			timerRef.current = setTimeout(() => {
+				setHalfFlipped(true);
+			}, delay + (duration / 2));
+
 		} else {
-			rotationY.value = withTiming(0);
-			posX.value = withTiming(0);
+			// Shows the back of the cards
+			rotationY.value = withDelay(delay, withTiming(0, { duration }));
+			posX.value = withDelay(delay, withTiming(0, { duration }));
+			
+			timerRef.current = setTimeout(() => {
+				setHalfFlipped(false);
+			}, delay + (duration / 2));
 		}
 	}, [posX, props.flipped, position, rotationY]);
 
 	/**
-     * Returns an animated style
+     * Returns an animated style for the card
      */
-	const animatedStyle = useAnimatedStyle(() => {
+	const animatedCardStyle = useAnimatedStyle(() => {
 		return {
 			transform: [
 				{ 
@@ -58,9 +80,9 @@ const Card: React.FC<CardProps> = (props) => {
 	});
 
 	return (
-		<ScCard style={animatedStyle}>
+		<ScCard style={animatedCardStyle}>
 			<ScCardInner>
-				<ScCardFront flipped={props.flipped}>
+				<ScCardFront flipped={halfFlipped}>
 					<ScFrontImage source={props.image} />
 				</ScCardFront>
 				<ScCardBack>
@@ -75,10 +97,12 @@ export default Card;
 
 const ScCard = styled(Animated.View)`
     position: absolute;
-    left: 30%;
+    left: 5%;
 	background-color: transparent;
   	width: 200px;
   	height: 300px;
+	border-radius: 10px;
+	overflow: hidden;
 `;
 
 const ScCardInner = styled.View`
