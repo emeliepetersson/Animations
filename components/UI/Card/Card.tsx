@@ -1,5 +1,6 @@
 import React from 'react';
-import Animated, { useAnimatedStyle, useSharedValue, withDelay, withTiming } from 'react-native-reanimated';
+import { PanGestureHandler } from 'react-native-gesture-handler';
+import Animated, { useAnimatedGestureHandler, useAnimatedStyle, useSharedValue, withDelay, withTiming } from 'react-native-reanimated';
 import styled from 'styled-components/native';
 import { CardProps, CardStyleProps } from './Card.types';
 
@@ -79,17 +80,24 @@ const Card: React.FC<CardProps> = (props) => {
 		};
 	});
 
+	const gestureHandler = useAnimatedGestureHandler({
+		// TODO: Move card around on drag
+		// Pan gesture: https://docs.swmansion.com/react-native-gesture-handler/docs/api/gestures/pan-gesture
+	});
+
 	return (
-		<ScCard style={animatedCardStyle}>
-			<ScCardInner>
-				<ScCardFront flipped={halfFlipped}>
-					<ScFrontImage source={props.image} />
-				</ScCardFront>
-				<ScCardBack>
-					<ScBackImage source={require('../../../assets/card-back.png')} />
-				</ScCardBack>
-			</ScCardInner>
-		</ScCard>
+		<PanGestureHandler onGestureEvent={gestureHandler}>
+			<ScCard style={animatedCardStyle}>
+				<ScCardInner>
+					<ScCardFront flipped={halfFlipped}>
+						<ScFrontImage source={props.image} />
+					</ScCardFront>
+					<ScCardBack>
+						<ScBackImage source={require('../../../assets/card-back.png')} />
+					</ScCardBack>
+				</ScCardInner>
+			</ScCard>
+		</PanGestureHandler>
 	);
 };
 
